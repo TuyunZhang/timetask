@@ -27,6 +27,7 @@ try:
 except Exception as e:
     print(f"未安装wework: {e}")
 
+from channel import channel_factory
 class ExcelTool(object):
     __file_name = "timeTask.xlsx"
     __sheet_name = "定时任务"
@@ -921,6 +922,27 @@ class TimeTaskModel:
             except Exception as e:
                 print(f"[{channel_name}通道] 通过 群Title 获取群ID发生错误，错误信息为：{e}")
                 return tempRoomId
+            
+        elif channel_name == "gewechat":
+            channel = channel_factory.create_channel(channel_name)
+            tempRoomId = ""
+            try:
+                # 数据结构为字典数组
+                rooms = channel.get_chatroom_list()
+                if len(rooms) > 0:
+                    # 遍历
+                    for item in rooms:
+                        roomId = item.get("room_id")
+                        nickname = item.get("room_name")
+                        if nickname == groupTitle:
+                            tempRoomId = roomId
+                            break
+
+                return tempRoomId
+
+            except Exception as e:
+                print(f"[{channel_name}通道] 通过 群Title 获取群ID发生错误，错误信息为：{e}")
+                return tempRoomId           
         else:
             print(f"[{channel_name}通道] 通过 群Title 获取群ID 不支持的channel，channel为：{channel_name}")
             return ""
